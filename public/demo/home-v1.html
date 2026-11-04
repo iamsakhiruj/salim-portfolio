@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Salim — Design Demo v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #07090d;
+    --bg-2: #0c1017;
+    --card: rgba(255, 255, 255, 0.035);
+    --card-hi: rgba(255, 255, 255, 0.06);
+    --line: rgba(255, 255, 255, 0.08);
+    --line-hi: rgba(255, 255, 255, 0.16);
+    --text: #eef1f6;
+    --muted: #8b95a7;
+    --mint: #3ef0b5;
+    --cyan: #3cc8ff;
+    --violet: #8b7bff;
+    --amber: #ffb547;
+    --grad: linear-gradient(110deg, var(--mint), var(--cyan) 45%, var(--violet));
+    --display: 'Space Grotesk', system-ui, sans-serif;
+    --body: 'Inter', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --r: 20px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--body); font-size: 16px; line-height: 1.6;
+    -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  .mono { font-family: var(--mono); }
+  .grad-text { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  /* Demo banner */
+  .demo-flag {
+    position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 100;
+    font: 500 12px var(--mono); padding: 8px 14px; border-radius: 999px;
+    background: rgba(255,181,71,.12); color: var(--amber); border: 1px solid rgba(255,181,71,.35);
+    backdrop-filter: blur(10px); white-space: nowrap;
+  }
+
+  /* Nav */
+  nav.top {
+    position: fixed; inset: 0 0 auto 0; z-index: 50;
+    backdrop-filter: blur(14px); background: rgba(7,9,13,.6); border-bottom: 1px solid var(--line);
+  }
+  nav.top .wrap { display: flex; align-items: center; justify-content: space-between; height: 68px; gap: 16px; }
+  .logo { display: flex; align-items: center; gap: 10px; font: 700 18px var(--display); letter-spacing: -.02em; }
+  .logo-mark {
+    width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center;
+    background: var(--grad); color: #04110c; font-size: 15px;
+  }
+  .nav-links { display: flex; gap: 28px; font-size: 14px; color: var(--muted); }
+  .nav-links a:hover { color: var(--text); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; border-radius: 999px;
+    font-weight: 600; font-size: 14px; transition: transform .2s, box-shadow .2s, background .2s;
+  }
+  .btn-primary { background: var(--text); color: #05070a; }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px -8px rgba(62,240,181,.6); }
+  .btn-ghost { border: 1px solid var(--line-hi); }
+  .btn-ghost:hover { background: var(--card-hi); }
+
+  /* Hero */
+  .hero { position: relative; min-height: 100vh; display: flex; align-items: center; padding: 120px 0 80px; overflow: hidden; }
+  #net { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .55; }
+  .glow { position: absolute; border-radius: 50%; filter: blur(120px); opacity: .35; pointer-events: none; }
+  .glow.a { width: 520px; height: 520px; background: var(--mint); top: -160px; left: -120px; opacity: .18; }
+  .glow.b { width: 600px; height: 600px; background: var(--violet); bottom: -260px; right: -160px; opacity: .22; }
+  .hero-grid { position: relative; display: grid; grid-template-columns: 1.15fr .85fr; gap: 56px; align-items: center; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 10px; padding: 7px 14px 7px 10px; border-radius: 999px;
+    border: 1px solid var(--line-hi); background: var(--card); font-size: 13px; color: var(--muted);
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 0 rgba(62,240,181,.7); animation: ping 2s infinite; }
+  @keyframes ping { 70% { box-shadow: 0 0 0 10px rgba(62,240,181,0); } 100% { box-shadow: 0 0 0 0 rgba(62,240,181,0); } }
+  h1 {
+    font: 700 clamp(44px, 6.4vw, 84px)/1.0 var(--display); letter-spacing: -.045em; margin: 26px 0 24px;
+  }
+  .hero p.lede { font-size: 19px; color: var(--muted); max-width: 540px; margin: 0 0 36px; }
+  .hero p.lede b { color: var(--text); font-weight: 500; }
+  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .hero-meta { display: flex; gap: 22px; margin-top: 44px; font-size: 13px; color: var(--muted); flex-wrap: wrap; }
+  .hero-meta span { display: flex; align-items: center; gap: 8px; }
+
+  /* Live console */
+  .console {
+    position: relative; border-radius: var(--r); border: 1px solid var(--line-hi);
+    background: linear-gradient(180deg, rgba(18,24,34,.9), rgba(10,13,19,.9));
+    box-shadow: 0 40px 80px -30px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.06);
+    overflow: hidden; transform: perspective(1200px) rotateY(-8deg) rotateX(4deg);
+    transition: transform .6s;
+  }
+  .console:hover { transform: perspective(1200px) rotateY(0) rotateX(0); }
+  .console-bar { display: flex; align-items: center; gap: 8px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+  .console-bar i { width: 10px; height: 10px; border-radius: 50%; background: #2a3140; }
+  .console-bar .t { margin-left: 10px; font: 500 12px var(--mono); color: var(--muted); }
+  .console-bar .live { margin-left: auto; font: 500 11px var(--mono); color: var(--mint); display: flex; align-items: center; gap: 6px; }
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--line); }
+  .kpi { padding: 16px; border-right: 1px solid var(--line); }
+  .kpi:last-child { border-right: 0; }
+  .kpi small { display: block; font: 500 11px var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+  .kpi strong { font: 600 24px var(--display); letter-spacing: -.02em; }
+  .kpi em { font-style: normal; font-size: 12px; color: var(--mint); margin-left: 6px; }
+  .chart { padding: 14px 16px 6px; height: 110px; }
+  .chart svg { width: 100%; height: 100%; overflow: visible; }
+  .feed { padding: 8px 12px 14px; height: 196px; overflow: hidden; position: relative; }
+  .feed::after { content: ''; position: absolute; inset: auto 0 0 0; height: 50px; background: linear-gradient(transparent, rgba(10,13,19,1)); }
+  .lead {
+    display: grid; grid-template-columns: 30px 1fr auto; gap: 10px; align-items: center;
+    padding: 9px 8px; border-radius: 10px; font-size: 13px; animation: slideIn .5s ease both;
+  }
+  .lead:first-child { background: rgba(62,240,181,.07); }
+  .lead .ch { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; font: 600 11px var(--mono); }
+  .ch.wa { background: rgba(62,240,181,.15); color: var(--mint); }
+  .ch.fb { background: rgba(60,200,255,.15); color: var(--cyan); }
+  .ch.ig { background: rgba(139,123,255,.18); color: var(--violet); }
+  .lead .who { color: var(--text); }
+  .lead .src { color: var(--muted); font-size: 12px; }
+  .lead .agent { font: 500 11px var(--mono); color: var(--muted); padding: 3px 8px; border: 1px solid var(--line); border-radius: 6px; }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(-12px); } }
+
+  /* Logos marquee */
+  .marquee { border-block: 1px solid var(--line); padding: 22px 0; overflow: hidden; background: var(--bg-2); }
+  .track { display: flex; gap: 56px; width: max-content; animation: scroll 40s linear infinite; }
+  .track span { font: 500 15px var(--display); color: #5d6677; white-space: nowrap; display: flex; align-items: center; gap: 56px; }
+  .track span::after { content: '✦'; color: #2c3442; font-size: 12px; }
+  @keyframes scroll { to { transform: translateX(-50%); } }
+
+  /* Sections */
+  section.block { padding: 120px 0; position: relative; }
+  .eyebrow { font: 500 12px var(--mono); color: var(--mint); text-transform: uppercase; letter-spacing: .14em; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+  .eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--mint); }
+  h2 { font: 700 clamp(34px, 4.4vw, 56px)/1.05 var(--display); letter-spacing: -.035em; margin: 0 0 18px; max-width: 760px; }
+  .sub { color: var(--muted); font-size: 18px; max-width: 600px; margin: 0; }
+
+  /* Stats */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; margin-top: 56px; }
+  .stat { background: var(--bg); padding: 34px 28px; position: relative; overflow: hidden; }
+  .stat:hover { background: var(--bg-2); }
+  .stat .n { font: 700 clamp(34px, 4.2vw, 54px)/1 var(--display); letter-spacing: -.04em; white-space: nowrap; }
+  .stat .l { color: var(--muted); margin-top: 12px; font-size: 14px; }
+  .stat .bar { position: absolute; left: 0; bottom: 0; height: 2px; width: 0; background: var(--grad); transition: width 1.6s cubic-bezier(.2,.7,.2,1); }
+  .stat.in .bar { width: 100%; }
+
+  /* Bento */
+  .bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 18px; margin-top: 56px; }
+  .tile {
+    grid-column: span 3; border-radius: var(--r); border: 1px solid var(--line); background: var(--card);
+    padding: 30px; position: relative; overflow: hidden; transition: border-color .3s, transform .3s; min-height: 320px;
+    display: flex; flex-direction: column;
+  }
+  .tile:hover { border-color: var(--line-hi); transform: translateY(-4px); }
+  .tile::before {
+    content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity .4s; pointer-events: none;
+    background: radial-gradient(500px circle at var(--mx, 50%) var(--my, 50%), rgba(62,240,181,.08), transparent 40%);
+  }
+  .tile:hover::before { opacity: 1; }
+  .tile.wide { grid-column: span 4; }
+  .tile.narrow { grid-column: span 2; }
+  .tile.full { grid-column: span 6; }
+  .tag { font: 500 11px var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
+  .tile h3 { font: 600 26px/1.15 var(--display); letter-spacing: -.025em; margin: 12px 0 10px; }
+  .tile p { color: var(--muted); margin: 0; font-size: 15px; }
+  .tile .metric { margin-top: auto; padding-top: 24px; display: flex; align-items: baseline; gap: 10px; }
+  .tile .metric b { font: 700 40px var(--display); letter-spacing: -.03em; }
+  .tile .metric span { color: var(--muted); font-size: 14px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 18px; }
+  .chips i { font: 500 11px var(--mono); font-style: normal; padding: 4px 9px; border-radius: 6px; background: rgba(255,255,255,.05); color: #aab3c2; }
+  .more { position: absolute; top: 26px; right: 26px; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line-hi); display: grid; place-items: center; transition: background .3s, transform .3s; }
+  .tile:hover .more { background: var(--text); color: #000; transform: rotate(-45deg); }
+
+  /* Pipeline diagram */
+  .pipe { margin: 26px 0 0; height: 150px; }
+  .pipe svg { width: 100%; height: 100%; }
+  .pipe .node rect { fill: rgba(255,255,255,.04); stroke: var(--line-hi); }
+  .pipe .node text { fill: var(--text); font: 500 11px var(--mono); }
+  .pipe .node .s { fill: var(--muted); font-size: 9.5px; }
+  .pipe path.wire { stroke: rgba(255,255,255,.12); stroke-width: 1.5; fill: none; }
+  .pipe path.flow { stroke: url(#flowGrad); stroke-width: 2; fill: none; stroke-dasharray: 6 14; animation: dash 1.2s linear infinite; }
+  @keyframes dash { to { stroke-dashoffset: -40; } }
+
+  /* Chat bubbles */
+  .bubbles { margin-top: 22px; display: flex; flex-direction: column; gap: 8px; }
+  .bubble { align-self: flex-start; max-width: 85%; font-size: 13px; padding: 9px 13px; border-radius: 14px 14px 14px 4px; background: rgba(62,240,181,.1); border: 1px solid rgba(62,240,181,.2); }
+  .bubble.r { align-self: flex-end; border-radius: 14px 14px 4px 14px; background: rgba(255,255,255,.05); border-color: var(--line); color: var(--muted); }
+
+  /* Signal meter */
+  .meter { margin-top: 26px; display: grid; gap: 12px; }
+  .meter .row { display: grid; grid-template-columns: 90px 1fr 44px; align-items: center; gap: 12px; font: 500 12px var(--mono); color: var(--muted); }
+  .meter .track2 { height: 8px; border-radius: 99px; background: rgba(255,255,255,.06); overflow: hidden; }
+  .meter .fill { height: 100%; border-radius: 99px; width: 0; transition: width 1.4s cubic-bezier(.2,.7,.2,1); }
+  .in .meter .fill { width: var(--w); }
+
+  /* SEO chart */
+  .seo-chart { margin-top: 20px; height: 130px; }
+  .seo-chart svg { width: 100%; height: 100%; overflow: visible; }
+  .draw { stroke-dasharray: 1000; stroke-dashoffset: 1000; transition: stroke-dashoffset 2.4s ease; }
+  .in .draw { stroke-dashoffset: 0; }
+
+  /* Timeline */
+  .timeline { margin-top: 56px; position: relative; }
+  .timeline::before { content: ''; position: absolute; left: 180px; top: 8px; bottom: 8px; width: 1px; background: linear-gradient(var(--mint), var(--violet) 60%, transparent); }
+  .job { display: grid; grid-template-columns: 180px 1fr; gap: 48px; padding: 0 0 54px; position: relative; }
+  .job::before { content: ''; position: absolute; left: 175px; top: 8px; width: 11px; height: 11px; border-radius: 50%; background: var(--bg); border: 2px solid var(--mint); }
+  .job .when { font: 500 13px var(--mono); color: var(--muted); padding-top: 4px; text-align: right; padding-right: 36px; }
+  .job h4 { font: 600 22px var(--display); letter-spacing: -.02em; margin: 0; }
+  .job .at { color: var(--muted); margin: 4px 0 14px; font-size: 15px; }
+  .job ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; color: #b7c0cf; font-size: 15px; }
+  .job li { padding-left: 20px; position: relative; }
+  .job li::before { content: '→'; position: absolute; left: 0; color: var(--mint); }
+
+  /* Stack */
+  .stack-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 56px; }
+  .stack { border: 1px solid var(--line); border-radius: var(--r); padding: 26px; background: var(--card); }
+  .stack h5 { margin: 0 0 16px; font: 600 16px var(--display); display: flex; align-items: center; gap: 10px; }
+  .stack h5 .ic { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; background: rgba(62,240,181,.1); color: var(--mint); font-size: 14px; }
+
+  /* CTA */
+  .cta {
+    margin: 0 auto 100px; border-radius: 28px; padding: 90px 40px; text-align: center; position: relative; overflow: hidden;
+    border: 1px solid var(--line-hi); background: radial-gradient(800px 300px at 50% 0%, rgba(62,240,181,.16), transparent 70%), var(--bg-2);
+  }
+  .cta h2 { margin: 0 auto 18px; max-width: 820px; }
+  .cta .sub { margin: 0 auto 36px; }
+  footer { border-top: 1px solid var(--line); padding: 32px 0 80px; color: var(--muted); font-size: 14px; }
+  footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+  /* Reveal */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  @media (max-width: 980px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .console { transform: none; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .bento { grid-template-columns: 1fr; }
+    .tile, .tile.wide, .tile.narrow, .tile.full { grid-column: auto; }
+    .stack-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .timeline::before { left: 5px; }
+    .job { grid-template-columns: 1fr; gap: 6px; padding-left: 30px; }
+    .job::before { left: 0; }
+    .job .when { text-align: left; padding: 0; }
+  }
+  @media (max-width: 560px) {
+    .wrap { padding: 0 16px; }
+    .stat .n { font-size: 40px; }
+    .kpi strong { font-size: 19px; }
+    .cta { padding: 60px 20px; }
+    nav.top .btn { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .reveal { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="demo-flag">DESIGN DEMO v1 — not built yet</div>
+
+<nav class="top">
+  <div class="wrap">
+    <a href="#" class="logo"><span class="logo-mark">S</span>Salim</a>
+    <div class="nav-links">
+      <a href="#work">Work</a><a href="#impact">Impact</a><a href="#experience">Experience</a><a href="#stack">Stack</a><a href="#">Writing</a>
+    </div>
+    <a href="#contact" class="btn btn-primary">Let's talk</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <canvas id="net"></canvas>
+  <div class="glow a"></div><div class="glow b"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <span class="pill"><span class="dot"></span>Digital Marketing Manager · Kuala Lumpur</span>
+      <h1>I build the <span class="grad-text">systems</span> marketing runs on.</h1>
+      <p class="lede">Performance marketing, automation and AI for a healthcare group across <b>3 countries</b>, managing <b>RM480k a year</b> in paid media and running the lead and reporting tools I built myself.</p>
+      <div class="cta-row">
+        <a href="#work" class="btn btn-primary">See the systems →</a>
+        <a href="#" class="btn btn-ghost">Download resume</a>
+      </div>
+      <div class="hero-meta">
+        <span>◎ Meta · Google · TikTok Ads</span>
+        <span>◎ Graph API &amp; WhatsApp Cloud API</span>
+        <span>◎ AI reporting agents</span>
+      </div>
+    </div>
+
+    <div class="console reveal" aria-label="Illustration of the lead management dashboard">
+      <div class="console-bar">
+        <i></i><i></i><i></i>
+        <span class="t">lead-hub / today</span>
+        <span class="live"><span class="dot"></span>LIVE</span>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><small>Inquiries</small><strong id="k1">142</strong></div>
+        <div class="kpi"><small>Pages</small><strong>17</strong></div>
+        <div class="kpi"><small>Channels</small><strong>FB · IG · WA</strong></div>
+      </div>
+      <div class="chart">
+        <svg viewBox="0 0 300 90" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3ef0b5" stop-opacity=".35"/><stop offset="1" stop-color="#3ef0b5" stop-opacity="0"/></linearGradient>
+          </defs>
+          <path id="areaPath" fill="url(#area)"/>
+          <path id="linePath" fill="none" stroke="#3ef0b5" stroke-width="2"/>
+        </svg>
+      </div>
+      <div class="feed" id="feed"></div>
+    </div>
+  </div>
+</header>
+
+<div class="marquee" aria-hidden="true">
+  <div class="track" id="track"></div>
+</div>
+
+<!-- IMPACT -->
+<section class="block" id="impact">
+  <div class="wrap">
+    <div class="eyebrow reveal">Impact</div>
+    <h2 class="reveal">Marketing that's measured, automated and accountable.</h2>
+    <p class="sub reveal">Hands-on across strategy, budget and the code underneath it.</p>
+    <div class="stats">
+      <div class="stat reveal"><div class="n" data-count="480" data-prefix="RM" data-suffix="k">0</div><div class="l">Paid media managed per year</div><div class="bar"></div></div>
+      <div class="stat reveal"><div class="n" data-count="9">0</div><div class="l">Clinic websites across MY · PH · ID</div><div class="bar"></div></div>
+      <div class="stat reveal"><div class="n" data-count="200" data-prefix="50–">0</div><div class="l">Inquiries a day through my lead system</div><div class="bar"></div></div>
+      <div class="stat reveal"><div class="n" data-count="10" data-suffix="k+">0</div><div class="l">Organic visitors a month, flagship site</div><div class="bar"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- WORK -->
+<section class="block" id="work" style="padding-top:0">
+  <div class="wrap">
+    <div class="eyebrow reveal">Selected systems</div>
+    <h2 class="reveal">Built in-house, running in production.</h2>
+    <p class="sub reveal">Each one replaced a manual process or a paid tool, and runs every day.</p>
+
+    <div class="bento">
+      <a href="#" class="tile wide reveal">
+        <span class="more">↗</span>
+        <span class="tag">Automation · AI</span>
+        <h3>AI-powered Meta reporting pipeline</h3>
+        <p>17 Facebook Pages and their Instagram accounts, collected on schedule. An AI agent writes the weekly analysis.</p>
+        <div class="pipe">
+          <svg viewBox="0 0 640 150" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <linearGradient id="flowGrad" x1="0" x2="1"><stop offset="0" stop-color="#3ef0b5"/><stop offset="1" stop-color="#8b7bff"/></linearGradient>
+            </defs>
+            <path class="wire" d="M110 75 H170"/><path class="flow" d="M110 75 H170"/>
+            <path class="wire" d="M290 75 H350"/><path class="flow" d="M290 75 H350"/>
+            <path class="wire" d="M470 75 H520"/><path class="flow" d="M470 75 H520"/>
+            <g class="node"><rect x="0" y="45" width="110" height="60" rx="12"/><text x="14" y="71">17 Pages</text><text class="s" x="14" y="89">FB + IG</text></g>
+            <g class="node"><rect x="170" y="45" width="120" height="60" rx="12"/><text x="184" y="71">Graph API</text><text class="s" x="184" y="89">batched · cron</text></g>
+            <g class="node"><rect x="350" y="45" width="120" height="60" rx="12"/><text x="364" y="71">Metrics DB</text><text class="s" x="364" y="89">normalized</text></g>
+            <g class="node"><rect x="520" y="45" width="120" height="60" rx="12" style="stroke:#3ef0b5"/><text x="534" y="71">AI agent</text><text class="s" x="534" y="89">weekly report</text></g>
+          </svg>
+        </div>
+        <div class="chips"><i>Meta Graph API</i><i>Claude API</i><i>Scheduled jobs</i><i>SQL</i></div>
+      </a>
+
+      <a href="#" class="tile narrow reveal">
+        <span class="more">↗</span>
+        <span class="tag">Lead ops</span>
+        <h3>Omnichannel lead hub</h3>
+        <p>WhatsApp + Messenger inquiries in one place, auto-assigned and attributed.</p>
+        <div class="bubbles">
+          <div class="bubble">Hi, how much is FUE for 2,500 grafts?</div>
+          <div class="bubble r">→ assigned to Agent 2 · KL page</div>
+        </div>
+        <div class="metric"><b>50–200</b><span>a day</span></div>
+      </a>
+
+      <a href="#" class="tile narrow reveal">
+        <span class="more">↗</span>
+        <span class="tag">Tracking</span>
+        <h3>Server-side Conversions API</h3>
+        <p>Recovered the attribution that browser and iOS restrictions were losing.</p>
+        <div class="meter">
+          <div class="row"><span>Browser</span><div class="track2"><div class="fill" style="--w:46%;background:#5d6677"></div></div><span>pixel</span></div>
+          <div class="row"><span>+ Server</span><div class="track2"><div class="fill" style="--w:92%;background:var(--grad)"></div></div><span>CAPI</span></div>
+        </div>
+        <div class="chips" style="margin-top:auto;padding-top:20px"><i>Meta CAPI</i><i>GTM</i><i>GA4</i></div>
+      </a>
+
+      <a href="#" class="tile wide reveal">
+        <span class="more">↗</span>
+        <span class="tag">SEO · Healthcare</span>
+        <h3>#1 rankings in a YMYL niche</h3>
+        <p>Technical SEO, E-E-A-T content with clinical staff, and link acquisition across a 9-site portfolio.</p>
+        <div class="seo-chart">
+          <svg viewBox="0 0 600 130" preserveAspectRatio="none">
+            <defs><linearGradient id="seoA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8b7bff" stop-opacity=".3"/><stop offset="1" stop-color="#8b7bff" stop-opacity="0"/></linearGradient></defs>
+            <path d="M0 120 C60 118 90 112 140 105 S230 92 280 80 S360 62 410 48 S500 22 600 8 V130 H0Z" fill="url(#seoA)"/>
+            <path class="draw" d="M0 120 C60 118 90 112 140 105 S230 92 280 80 S360 62 410 48 S500 22 600 8" fill="none" stroke="#8b7bff" stroke-width="2.5"/>
+            <circle cx="600" cy="8" r="5" fill="#8b7bff"/>
+          </svg>
+        </div>
+        <div class="metric"><b>10,000+</b><span>organic visitors / month</span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section class="block" id="experience" style="padding-top:0">
+  <div class="wrap">
+    <div class="eyebrow reveal">Experience</div>
+    <h2 class="reveal">From network engineer to growth engineer.</h2>
+    <div class="timeline">
+      <div class="job reveal">
+        <div class="when">2022 — Now</div>
+        <div>
+          <h4>Digital Marketing Manager</h4>
+          <div class="at">Klinik Dr Inder · Healthcare group, MY · PH · ID</div>
+          <ul>
+            <li>Lead a team across content, design, paid media and web</li>
+            <li>RM40k/month paid media across Google, Meta, TikTok, LinkedIn</li>
+            <li>Built the reporting pipeline, lead hub, CAPI tracking and booking system</li>
+          </ul>
+        </div>
+      </div>
+      <div class="job reveal">
+        <div class="when">2022 — Now</div>
+        <div>
+          <h4>Web Developer &amp; Digital Marketing</h4>
+          <div class="at">Easy Hotel · Hospitality, part-time</div>
+          <ul><li>Cut customer acquisition cost by 30% with restructured campaigns and tracking</li></ul>
+        </div>
+      </div>
+      <div class="job reveal">
+        <div class="when">2019 — 2021</div>
+        <div>
+          <h4>Web Developer</h4>
+          <div class="at">Ant Robotics · IoT, Dhaka</div>
+          <ul><li>Built and optimized IoT web platforms</li></ul>
+        </div>
+      </div>
+      <div class="job reveal">
+        <div class="when">2017 — 2018</div>
+        <div>
+          <h4>Project Engineer, SOC</h4>
+          <div class="at">Robi Axiata · Telecoms, Dhaka</div>
+          <ul><li>Real-time 3G/4G network performance monitoring</li></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STACK -->
+<section class="block" id="stack" style="padding-top:0">
+  <div class="wrap">
+    <div class="eyebrow reveal">Stack</div>
+    <h2 class="reveal">Marketer's judgment, engineer's toolkit.</h2>
+    <div class="stack-grid">
+      <div class="stack reveal"><h5><span class="ic">◆</span>Paid &amp; growth</h5><div class="chips"><i>Meta Ads</i><i>Google Ads</i><i>TikTok Ads</i><i>LinkedIn Ads</i><i>YouTube</i><i>CPL / ROAS</i></div></div>
+      <div class="stack reveal"><h5><span class="ic">◇</span>Automation &amp; AI</h5><div class="chips"><i>Claude API</i><i>AI agents</i><i>Graph API</i><i>WhatsApp Cloud API</i><i>Webhooks</i><i>Cron</i></div></div>
+      <div class="stack reveal"><h5><span class="ic">○</span>Tracking &amp; SEO</h5><div class="chips"><i>Meta CAPI</i><i>GTM</i><i>GA4</i><i>Search Console</i><i>SEMrush</i><i>Schema</i></div></div>
+      <div class="stack reveal"><h5><span class="ic">△</span>Development</h5><div class="chips"><i>Next.js</i><i>React</i><i>Node.js</i><i>PHP</i><i>WordPress</i><i>MySQL</i></div></div>
+      <div class="stack reveal"><h5><span class="ic">□</span>Design</h5><div class="chips"><i>Figma</i><i>Photoshop</i><i>Illustrator</i><i>Premiere Pro</i><i>CapCut</i></div></div>
+      <div class="stack reveal"><h5><span class="ic">✦</span>Education</h5><div class="chips"><i>PhD ICT (in progress)</i><i>M.Sc Software Eng.</i><i>B.Sc Telecom Eng.</i></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="wrap" id="contact">
+  <div class="cta reveal">
+    <div class="eyebrow" style="justify-content:center">Open to opportunities</div>
+    <h2>Need marketing that runs on <span class="grad-text">systems</span>, not spreadsheets?</h2>
+    <p class="sub">Senior digital marketing, growth or marketing-ops roles in Malaysia and the region.</p>
+    <div class="cta-row" style="justify-content:center">
+      <a href="mailto:sakhiruj.jaman.salim@gmail.com" class="btn btn-primary">Email me →</a>
+      <a href="#" class="btn btn-ghost">LinkedIn</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Md Sakhirujjaman Salim</span>
+    <span class="mono">Built with Next.js · Payload · Supabase</span>
+  </div>
+</footer>
+
+<script>
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Tool marquee
+  const tools = ['Meta Ads', 'Google Ads', 'TikTok Ads', 'WhatsApp Cloud API', 'Meta Graph API', 'Conversions API', 'GA4', 'Tag Manager', 'SEMrush', 'Claude API', 'Next.js', 'WordPress'];
+  document.getElementById('track').innerHTML = [...tools, ...tools].map(t => `<span>${t}</span>`).join('');
+
+  // Scroll reveal + count-up
+  const countUp = el => {
+    const end = +el.dataset.count, pre = el.dataset.prefix || '', suf = el.dataset.suffix || '';
+    if (reduce) { el.textContent = pre + end + suf; return; }
+    const t0 = performance.now(), dur = 1600;
+    const tick = now => {
+      const p = Math.min((now - t0) / dur, 1), e = 1 - Math.pow(1 - p, 3);
+      el.textContent = pre + Math.round(end * e).toLocaleString() + suf;
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+  const io = new IntersectionObserver(entries => entries.forEach(en => {
+    if (!en.isIntersecting) return;
+    en.target.classList.add('in');
+    en.target.querySelectorAll('[data-count]').forEach(countUp);
+    io.unobserve(en.target);
+  }), { threshold: 0.18 });
+  document.querySelectorAll('.reveal').forEach((el, i) => { el.style.transitionDelay = (i % 4) * 80 + 'ms'; io.observe(el); });
+
+  // Card spotlight
+  document.querySelectorAll('.tile').forEach(t => t.addEventListener('pointermove', e => {
+    const r = t.getBoundingClientRect();
+    t.style.setProperty('--mx', e.clientX - r.left + 'px');
+    t.style.setProperty('--my', e.clientY - r.top + 'px');
+  }));
+
+  // Console chart
+  let pts = Array.from({ length: 24 }, (_, i) => 30 + Math.sin(i / 3) * 12 + i * 1.6 + Math.random() * 8);
+  const drawChart = () => {
+    const max = Math.max(...pts) + 10, step = 300 / (pts.length - 1);
+    const xy = pts.map((v, i) => [i * step, 90 - (v / max) * 85]);
+    const d = xy.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+    document.getElementById('linePath').setAttribute('d', d);
+    document.getElementById('areaPath').setAttribute('d', d + ' L300 90 L0 90 Z');
+  };
+  drawChart();
+
+  // Live lead feed (illustrative)
+  const feed = document.getElementById('feed');
+  const leads = [
+    ['wa', 'WA', 'New inquiry · Hair transplant', 'WhatsApp · KL'],
+    ['fb', 'FB', 'Consultation request', 'Messenger · Manila page'],
+    ['ig', 'IG', 'Price question · FUE', 'Instagram DM · Jakarta'],
+    ['wa', 'WA', 'Booking follow-up', 'WhatsApp · Penang'],
+    ['fb', 'FB', 'Lead form submitted', 'Lead Ads · KL page'],
+  ];
+  let n = 0, total = 142;
+  const addLead = () => {
+    const [c, l, who, src] = leads[n++ % leads.length];
+    const el = document.createElement('div');
+    el.className = 'lead';
+    el.innerHTML = `<span class="ch ${c}">${l}</span><span><div class="who">${who}</div><div class="src">${src}</div></span><span class="agent">Agent ${1 + (n % 4)}</span>`;
+    feed.prepend(el);
+    if (feed.children.length > 6) feed.lastElementChild.remove();
+    document.getElementById('k1').textContent = ++total;
+    pts.push(pts[pts.length - 1] + (Math.random() * 10 - 3)); pts.shift(); drawChart();
+  };
+  for (let i = 0; i < 4; i++) addLead();
+  total = 142; document.getElementById('k1').textContent = total;
+  if (!reduce) setInterval(addLead, 2400);
+
+  // Hero network canvas
+  const cv = document.getElementById('net'), ctx = cv.getContext('2d');
+  let W, H, nodes;
+  const size = () => {
+    const dpr = Math.min(devicePixelRatio, 2);
+    W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    nodes = Array.from({ length: Math.round(W * H / 16000) }, () => ({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - .5) * .3, vy: (Math.random() - .5) * .3 }));
+  };
+  const frame = () => {
+    ctx.clearRect(0, 0, W, H);
+    for (const a of nodes) {
+      a.x += a.vx; a.y += a.vy;
+      if (a.x < 0 || a.x > W) a.vx *= -1;
+      if (a.y < 0 || a.y > H) a.vy *= -1;
+    }
+    for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) {
+      const a = nodes[i], b = nodes[j], d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (d < 130) { ctx.strokeStyle = `rgba(62,240,181,${(1 - d / 130) * .22})`; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); }
+    }
+    ctx.fillStyle = 'rgba(160,240,220,.55)';
+    for (const a of nodes) { ctx.beginPath(); ctx.arc(a.x, a.y, 1.4, 0, 7); ctx.fill(); }
+    if (!reduce) requestAnimationFrame(frame);
+  };
+  size(); frame(); addEventListener('resize', size);
+</script>
+</body>
+</html>
