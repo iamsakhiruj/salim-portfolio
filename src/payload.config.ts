@@ -36,6 +36,9 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
+      // Each Vercel function gets its own pool; keep it small so the Supabase pooler isn't exhausted.
+      max: process.env.VERCEL ? 2 : 10,
+      idleTimeoutMillis: process.env.VERCEL ? 10_000 : 30_000,
     },
   }),
   sharp,
